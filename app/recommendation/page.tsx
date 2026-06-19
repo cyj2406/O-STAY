@@ -1,8 +1,8 @@
 "use client";
 
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Star } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import Link from "next/link";
 
 type StayType = {
@@ -26,7 +26,7 @@ const mockStays: StayType[] = [
     location: "서울 성수 근처",
     subtitle: "여백이 편안한 공간, 군더더기 없는 하루",
     desc: "앤틱 가구와 레트로 소품으로 가득 찬 빈티지 감성의 독채.",
-    image: "/blueprint-1.jpg",
+    image: "/blueprint-5.jpg",
     tags: ["원목", "조명", "빈티지", "소형 (~30㎡)"],
     category: "빈티지",
     price: "180,000원",
@@ -39,7 +39,7 @@ const mockStays: StayType[] = [
     location: "부산 해운대 근처",
     subtitle: "포근한 소재와 은은한 조명감이 살아 있는 공간",
     desc: "소박한 조화와 은은한 감성이 살아있는 공간.",
-    image: "/blueprint-2.jpg",
+    image: "/blueprint-6.jpg",
     tags: ["소파", "린넨", "미니멀 & 심플", "중형 (30~50㎡)", "#0F172A"],
     category: "미니멀 & 심플",
     price: "210,000원",
@@ -52,7 +52,7 @@ const mockStays: StayType[] = [
     location: "서울 종로 서촌",
     subtitle: "고즈넉한 대청마루에서 느끼는 전통의 쉼",
     desc: "수백 년의 세월을 간직한 대들보와 현대식 편리함이 공존하는 공간",
-    image: "/blueprint-1.jpg",
+    image: "/blueprint-7.jpg",
     tags: ["원목", "의자", "클래식 & 앤틱", "대형 (50㎡~)", "#854D0E"],
     category: "내추럴",
     price: "240,000원",
@@ -65,7 +65,7 @@ const mockStays: StayType[] = [
     location: "제주 한림읍",
     subtitle: "현무암 돌담 안에서 즐기는 따뜻한 프라이빗 스파",
     desc: "제주의 옛 감성을 온전히 살리면서 내부엔 아늑한 욕조와 프리미엄 우드 테이블을 배치한 공간",
-    image: "/blueprint-2.jpg",
+    image: "/blueprint-8.jpg",
     tags: ["라탄", "욕조", "내추럴", "대형 (50㎡~)", "#F1E6D2"],
     category: "내추럴",
     price: "280,000원",
@@ -78,6 +78,32 @@ function RecommendationContent() {
   const searchParams = useSearchParams();
   const tagsParam = searchParams.get("tags") || "";
   const selectedTags = tagsParam ? tagsParam.split(",") : [];
+
+  const [aiComment, setAiComment] = useState<string | null>(null);
+  const [isLoadingComment, setIsLoadingComment] = useState(true);
+
+  useEffect(() => {
+    let isActive = true;
+    setIsLoadingComment(true);
+    fetch("/api/ai-comment", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tags: tagsParam ? tagsParam.split(",") : [] }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (isActive) setAiComment(data.comment);
+      })
+      .catch(() => {
+        if (isActive) setAiComment(null);
+      })
+      .finally(() => {
+        if (isActive) setIsLoadingComment(false);
+      });
+    return () => {
+      isActive = false;
+    };
+  }, [tagsParam]);
 
   // Filter stays based on chosen tags.
   // If stay contains at least one of the tags, or we show all if tag matching is loose. Let's filter to stays that have at least one matching tag, or show a subset.
@@ -120,6 +146,23 @@ function RecommendationContent() {
                 </div>
               );
             })}
+          </div>
+        </div>
+      )}
+
+      {/* AI 취향 분석 코멘트 */}
+      {(isLoadingComment || aiComment) && (
+        <div className="mb-12 bg-neutral-50 border border-neutral-100 rounded-[28px] p-7 flex items-start gap-4">
+          <div className="w-10 h-10 rounded-full bg-neutral-900 text-white flex items-center justify-center shrink-0">
+            <Sparkles className="w-4.5 h-4.5" />
+          </div>
+          <div className="flex-1">
+            <h4 className="text-[11px] font-semibold text-neutral-400 uppercase tracking-widest mb-1.5">AI 취향 분석</h4>
+            {isLoadingComment ? (
+              <p className="text-[13.5px] text-neutral-400 font-medium animate-pulse">취향 분석 중...</p>
+            ) : (
+              <p className="text-[13.5px] text-neutral-700 font-medium leading-relaxed">{aiComment}</p>
+            )}
           </div>
         </div>
       )}

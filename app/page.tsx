@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { Heart } from "lucide-react";
 import { useApp } from "./context/AppContext";
 
 type StayType = {
@@ -13,12 +14,13 @@ type StayType = {
   image: string;
   tags: string[];
   category: string;
+  rating: number;
   price?: string;
   size?: string;
 };
 
 export default function Home() {
-  const { setShowQuizModal } = useApp();
+  const { setShowQuizModal, wishlist, toggleWish } = useApp();
 
   const popularStays: StayType[] = [
     {
@@ -27,9 +29,10 @@ export default function Home() {
       location: "서울 종로 서촌",
       subtitle: "고즈넉한 대청마루에서 느끼는 전통의 쉼",
       desc: "수백 년의 세월을 간직한 대들보와 현대식 편리함이 공존하는 프리미엄 한옥 공간",
-      image: "/blueprint-1.jpg",
+      image: "/blueprint-5.jpg",
       tags: ["#한옥", "#서촌마을", "#다도"],
       category: "내추럴",
+      rating: 4.7,
       price: "240,000원",
       size: "60㎡"
     },
@@ -39,9 +42,10 @@ export default function Home() {
       location: "제주 한림읍",
       subtitle: "현무암 돌담 안에서 즐기는 따뜻한 프라이빗 스파",
       desc: "제주의 옛 감성을 온전히 살리면서 내부엔 아늑한 욕조와 프리미엄 우드 테이블을 배치한 공간",
-      image: "/blueprint-2.jpg",
+      image: "/blueprint-6.jpg",
       tags: ["#독채", "#야외스파", "#제주감성"],
       category: "내추럴",
+      rating: 4.9,
       price: "280,000원",
       size: "70㎡"
     },
@@ -51,9 +55,10 @@ export default function Home() {
       location: "경기 양평군",
       subtitle: "푸른 숲속에 둘러싸인 미니멀 디자인 하우스",
       desc: "탁 트인 숲의 전경을 감상할 수 있는 통유리창과 모던한 가구가 인상적인 공간",
-      image: "/blueprint-1.jpg",
+      image: "/blueprint-7.jpg",
       tags: ["#숲뷰", "#불멍", "#통유리"],
       category: "모던",
+      rating: 4.6,
       price: "220,000원",
       size: "58㎡"
     }
@@ -144,6 +149,27 @@ export default function Home() {
                 <span className="absolute top-4 left-4 bg-black text-white text-[9.5px] font-semibold px-3 py-1 rounded-full uppercase tracking-wider">
                   ★ {stay.id === 3 ? "BEST" : stay.id === 4 ? "SPACIOUS" : "FOREST"}
                 </span>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleWish({
+                      id: stay.id,
+                      title: stay.title,
+                      location: stay.location,
+                      image: stay.image,
+                      rating: stay.rating,
+                      tags: stay.tags,
+                      price: stay.price ?? "",
+                      size: stay.size ?? ""
+                    });
+                  }}
+                  className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/90 hover:bg-white flex items-center justify-center shadow-sm transition-colors z-10"
+                  aria-label="찜하기"
+                >
+                  <Heart className={`w-4 h-4 ${wishlist.some((w) => w.id === stay.id) ? "fill-red-500 text-red-500" : "text-neutral-400"}`} />
+                </button>
               </div>
               <div className="py-6 px-3 flex-1 flex flex-col justify-between">
                 <div>

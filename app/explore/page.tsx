@@ -8,87 +8,142 @@ type StayType = {
   id: number;
   title: string;
   location: string;
-  subtitle: string;
-  desc: string;
-  image: string;
+  description: string;
+  rating: number;
   tags: string[];
+  floorPlanImage: string;
   category: string;
   price: string;
   size: string;
-  rating: string;
   reviews: string;
 };
 
 export default function ExplorePage() {
   const [selectedStay, setSelectedStay] = useState<StayType | null>(null);
   const [guests, setGuests] = useState(2);
-  const [isWished, setIsWished] = useState(false);
   const [detailTab, setDetailTab] = useState<"intro" | "products" | "structure" | "reviews">("reviews");
 
-  const { cartItems, setCartItems } = useApp();
+  const { cartItems, setCartItems, wishlist, toggleWish } = useApp();
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [selectedStay]);
 
-  const stays: StayType[] = [
+  // 도면 이미지 풀 (기존 2종 + 업로드 5종)
+  const floorPlanImages = [
+    "/blueprint-1.jpg",
+    "/blueprint-2.jpg",
+    "/blueprint-5.jpg",
+    "/blueprint-6.jpg",
+    "/blueprint-7.jpg",
+    "/blueprint-8.jpg",
+    "/blueprint-9.jpg"
+  ];
+
+  // 최소 6개 이상의 서로 다른 스테이 데이터 구성
+  const staysData = [
     {
       id: 1,
       title: "성수동 빈티지 스테이",
       location: "서울 성수 근처",
-      subtitle: "여백이 편안한 공간, 군더더기 없는 하루",
-      desc: "앤틱 가구와 레트로 소품으로 가득 찬 빈티지 감성의 독채. 성수동 골목길 뷰와 따뜻한 조명이 어우러진 공간.",
-      image: "/blueprint-1.jpg",
-      tags: ["#원목", "#조용한", "#채광 좋은", "#우드 톤"],
+      description: "앤틱 가구와 레트로 소품으로 가득 찬 빈티지 감성의 독채. 성수동 골목길 뷰와 따뜻한 조명이 어우러진 공간.",
+      rating: 4.8,
+      tags: ["원목", "조용한", "채광 좋은", "우드 톤"],
       category: "미니멀 & 심플",
       price: "180,000원",
       size: "45㎡",
-      rating: "4.8",
       reviews: "127"
     },
     {
       id: 2,
       title: "해운대 오션 브리즈 스테이",
       location: "부산 해운대 근처",
-      subtitle: "포근한 소재와 은은한 조명감이 살아 있는 공간",
-      desc: "소박한 조화와 은은한 감성이 살아있는 공간. 창문을 열면 시원한 바다 내음이 느껴지는 감성 가득한 하루.",
-      image: "/blueprint-2.jpg",
-      tags: ["#포근한", "#빔프로젝터", "#욕조", "#린넨"],
+      description: "소박한 조화와 은은한 감성이 살아있는 공간. 창문을 열면 시원한 바다 내음이 느껴지는 감성 가득한 하루.",
+      rating: 4.9,
+      tags: ["포근한", "빔프로젝터", "욕조", "린넨"],
       category: "미니멀 & 심플",
       price: "210,000원",
       size: "52㎡",
-      rating: "4.9",
       reviews: "98"
     },
     {
       id: 3,
       title: "서촌 한옥 스테이",
       location: "서울 종로 서촌",
-      subtitle: "고즈넉한 대청마루에서 느끼는 전통의 쉼",
-      desc: "수백 년의 세월을 간직한 대들보와 현대식 편리함이 공존하는 프리미엄 한옥 공간",
-      image: "/blueprint-1.jpg",
-      tags: ["#한옥", "#서촌마을", "#다도", "#원목"],
+      description: "수백 년의 세월을 간직한 대들보와 현대식 편리함이 공존하는 프리미엄 한옥 공간. 고즈넉한 대청마루에서 느끼는 전통의 쉼.",
+      rating: 4.7,
+      tags: ["한옥", "서촌마을", "다도", "원목"],
       category: "내추럴",
       price: "240,000원",
       size: "60㎡",
-      rating: "4.7",
       reviews: "64"
     },
     {
       id: 4,
       title: "제주 돌담 스테이",
       location: "제주 한림읍",
-      subtitle: "현무암 돌담 안에서 즐기는 따뜻한 프라이빗 스파",
-      desc: "제주의 옛 감성을 온전히 살리면서 내부엔 아늑한 욕조와 프리미엄 우드 테이블을 배치한 공간",
-      image: "/blueprint-2.jpg",
-      tags: ["#독채", "#야외스파", "#제주감성", "#라탄"],
+      description: "제주의 옛 감성을 온전히 살리면서 내부엔 아늑한 욕조와 프리미엄 우드 테이블을 배치한 공간. 현무암 돌담 안에서 즐기는 따뜻한 프라이빗 스파.",
+      rating: 4.9,
+      tags: ["독채", "야외스파", "제주감성", "라탄"],
       category: "내추럴",
       price: "280,000원",
       size: "70㎡",
-      rating: "4.9",
       reviews: "112"
+    },
+    {
+      id: 5,
+      title: "평창 포레스트 샬레",
+      location: "강원 평창 근처",
+      description: "울창한 침엽수림 속에서 즐기는 오프그리드 힐링. 자연 친화적 목재와 벽난로가 전하는 따뜻함.",
+      rating: 4.6,
+      tags: ["숲뷰", "벽난로", "힐링", "자연"],
+      category: "내추럴",
+      price: "195,000원",
+      size: "50㎡",
+      reviews: "42"
+    },
+    {
+      id: 6,
+      title: "망원 테라스 펜트하우스",
+      location: "서울 마포 망원",
+      description: "탁 트인 하늘과 망원동 전경을 조망할 수 있는 넓은 테라스. 미니멀한 인테리어와 모던 감성의 조화.",
+      rating: 4.8,
+      tags: ["루프탑", "망원시장", "시티뷰", "모던"],
+      category: "미니멀 & 심플",
+      price: "230,000원",
+      size: "55㎡",
+      reviews: "85"
+    },
+    {
+      id: 7,
+      title: "경주 고택 세레니티",
+      location: "경주 황리단길 근처",
+      description: "역사의 숨결이 느껴지는 기와 아래 정갈하게 꾸며진 현대적 감각의 고택. 조용한 안뜰에서 마시는 차 한잔.",
+      rating: 4.9,
+      tags: ["전통한옥", "안뜰", "다도", "정갈한"],
+      category: "내추럴",
+      price: "250,000원",
+      size: "65㎡",
+      reviews: "73"
     }
   ];
+
+  // 중복을 방지하기 위해 라운드로빈 방식으로 도면 배정
+  const stays: StayType[] = staysData.map((stay, idx) => ({
+    ...stay,
+    floorPlanImage: floorPlanImages[idx % floorPlanImages.length]
+  }));
+
+  const toWishedStay = (stay: StayType) => ({
+    id: stay.id,
+    title: stay.title,
+    location: stay.location,
+    image: stay.floorPlanImage,
+    rating: stay.rating,
+    tags: stay.tags,
+    price: stay.price,
+    size: stay.size
+  });
 
   const handleAddToCart = (stay: StayType) => {
     const isAlreadyInCart = cartItems.some((item) => item.id === stay.id);
@@ -104,9 +159,11 @@ export default function ExplorePage() {
       location: stay.location,
       price: priceNum,
       priceStr: `₩${priceNum.toLocaleString()}`,
-      image: stay.image,
+      image: stay.floorPlanImage,
       dates: "2026.06.12 - 06.13 (1박)",
-      guests: guests
+      guests: guests,
+      rating: stay.rating,
+      tags: stay.tags
     };
 
     setCartItems([...cartItems, newItem]);
@@ -138,7 +195,7 @@ export default function ExplorePage() {
           
           {/* Left Side: Blueprint Carousel Box */}
           <div className="lg:col-span-7 bg-[#F8F9FA] aspect-[4/3] rounded-[32px] border border-neutral-100 flex items-center justify-center p-12 relative overflow-hidden shadow-sm">
-            <img src={selectedStay.image} className="max-h-full object-contain max-w-full" alt="Floor plan" />
+            <img src={selectedStay.floorPlanImage} className="max-h-full object-contain max-w-full" alt="Floor plan" />
           </div>
 
           {/* Right Side: Sticky Booking Sidebar */}
@@ -160,7 +217,7 @@ export default function ExplorePage() {
             
             {/* Desc */}
             <p className="text-neutral-500 text-[13px] font-medium leading-[1.9] tracking-tight mb-8">
-              {selectedStay.desc}
+              {selectedStay.description}
             </p>
 
             {/* Price */}
@@ -207,15 +264,15 @@ export default function ExplorePage() {
 
             {/* Booking Buttons */}
             <div className="flex gap-4 mb-8 pb-8 border-b border-neutral-100">
-              <button 
-                onClick={() => setIsWished(!isWished)}
+              <button
+                onClick={() => toggleWish(toWishedStay(selectedStay))}
                 className={`flex-1 h-13 rounded-xl border flex items-center justify-center gap-1.5 text-[13px] font-semibold transition-all ${
-                  isWished 
-                    ? "border-red-200 bg-red-50 text-red-500" 
+                  wishlist.some((w) => w.id === selectedStay.id)
+                    ? "border-red-200 bg-red-50 text-red-500"
                     : "border-neutral-200 text-neutral-700 hover:bg-neutral-50"
                 }`}
               >
-                <Heart className={`w-4 h-4 ${isWished ? "fill-current" : ""}`} />
+                <Heart className={`w-4 h-4 ${wishlist.some((w) => w.id === selectedStay.id) ? "fill-current" : ""}`} />
                 <span>위시리스트</span>
               </button>
               <button 
@@ -432,16 +489,27 @@ export default function ExplorePage() {
             className="bg-white rounded-3xl overflow-hidden flex flex-col cursor-pointer group border border-neutral-100 hover:shadow-lg transition-all duration-300"
           >
             <div className="bg-[#F8F9FA] aspect-[4/3] flex items-center justify-center p-8 transition-colors group-hover:bg-neutral-100/70 relative">
-              <img src={stay.image} className="max-h-full object-contain max-w-full group-hover:scale-[1.03] transition-transform duration-300" alt="" />
+              <img src={stay.floorPlanImage} className="max-h-full object-contain max-w-full group-hover:scale-[1.03] transition-transform duration-300" alt="" />
               <span className="absolute top-4 left-4 bg-black text-white text-[9.5px] font-semibold px-3 py-1 rounded-full uppercase tracking-wider">
                 ★ {stay.rating}
               </span>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleWish(toWishedStay(stay));
+                }}
+                className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/90 hover:bg-white flex items-center justify-center shadow-sm transition-colors z-10"
+                aria-label="찜하기"
+              >
+                <Heart className={`w-4 h-4 ${wishlist.some((w) => w.id === stay.id) ? "fill-red-500 text-red-500" : "text-neutral-400"}`} />
+              </button>
             </div>
             <div className="py-6 px-6 flex-1 flex flex-col justify-between">
               <div>
                 <span className="text-[11px] text-[#A1A1A1] font-semibold uppercase tracking-widest block mb-1.5">{stay.location}</span>
                 <h3 className="text-[17px] font-semibold text-neutral-900 tracking-tight mb-2.5">{stay.title}</h3>
-                <p className="text-neutral-500 text-[12.5px] font-medium leading-relaxed mb-4">{stay.subtitle}</p>
+                <p className="text-neutral-500 text-[12.5px] font-medium leading-relaxed mb-4">{stay.description}</p>
                 <div className="flex flex-wrap gap-1.5 mb-4">
                   {stay.tags.map((tag) => (
                     <span key={tag} className="text-[11px] bg-neutral-100 text-neutral-600 px-2 py-0.5 rounded-md font-medium">

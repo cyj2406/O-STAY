@@ -14,10 +14,14 @@ export default function Header() {
   const {
     cartItems,
     setCartItems,
+    orders,
+    wishlist,
     activePanel,
     setActivePanel,
     isLoggedIn,
     setIsLoggedIn,
+    user,
+    logout,
     recentSearches,
     setRecentSearches,
     searchQuery,
@@ -115,40 +119,53 @@ export default function Header() {
                 </div>
                 <div>
                   <h4 className="text-[13px] font-semibold text-neutral-900">
-                    {isLoggedIn ? "김취향 님" : "로그인이 필요합니다"}
+                    {isLoggedIn && user ? `${user.name} 님` : "로그인이 필요합니다"}
                   </h4>
                   <span className="text-[10px] text-neutral-400 font-semibold">
-                    {isLoggedIn ? "taste_master@ostay.com" : "원활한 서비스를 위해 로그인하세요"}
+                    {isLoggedIn && user ? user.email : "원활한 서비스를 위해 로그인하세요"}
                   </span>
                 </div>
               </div>
 
               {isLoggedIn ? (
                 <div className="flex flex-col gap-2.5 text-[12px] font-semibold text-neutral-600">
-                  <a href="#" className="hover:text-black transition-colors py-1 flex justify-between items-center">
+                  <Link
+                    href="/mypage"
+                    onClick={() => setActivePanel("none")}
+                    className="hover:text-black transition-colors py-1 flex justify-between items-center"
+                  >
                     <span>예약 내역</span>
-                    <span className="text-[10px] bg-neutral-100 text-neutral-500 px-2 py-0.5 rounded-full">1건</span>
-                  </a>
-                  <a href="#" className="hover:text-black transition-colors py-1 flex justify-between items-center">
+                    <span className="text-[10px] bg-neutral-100 text-neutral-500 px-2 py-0.5 rounded-full">{orders.length}건</span>
+                  </Link>
+                  <Link
+                    href="/wishlist"
+                    onClick={() => setActivePanel("none")}
+                    className="hover:text-black transition-colors py-1 flex justify-between items-center"
+                  >
                     <span>찜한 스테이</span>
-                    <span className="text-[10px] bg-neutral-100 text-neutral-500 px-2 py-0.5 rounded-full">2건</span>
-                  </a>
+                    <span className="text-[10px] bg-neutral-100 text-neutral-500 px-2 py-0.5 rounded-full">{wishlist.length}건</span>
+                  </Link>
                   <a href="#" className="hover:text-black transition-colors py-1">후기 관리</a>
                   <a href="#" className="hover:text-black transition-colors py-1">계정 설정</a>
-                  <button 
-                    onClick={() => setIsLoggedIn(false)}
+                  <button
+                    onClick={() => {
+                      logout();
+                      setActivePanel("none");
+                      router.push("/");
+                    }}
                     className="w-full h-9 border border-neutral-200 hover:bg-neutral-50 rounded-xl text-[11px] font-semibold text-neutral-500 mt-2 transition-all active:scale-95"
                   >
                     로그아웃
                   </button>
                 </div>
               ) : (
-                <button 
-                  onClick={() => setIsLoggedIn(true)}
-                  className="w-full h-10 bg-black text-white hover:bg-neutral-800 rounded-xl text-[12px] font-semibold transition-all active:scale-95"
+                <Link 
+                  href="/login"
+                  onClick={() => setActivePanel("none")}
+                  className="w-full h-10 bg-black text-white hover:bg-neutral-800 rounded-xl text-[12px] font-semibold transition-all active:scale-95 flex items-center justify-center cursor-pointer"
                 >
                   로그인 / 회원가입
-                </button>
+                </Link>
               )}
             </div>
           )}
@@ -334,7 +351,7 @@ export default function Header() {
                 <button 
                   onClick={() => {
                     setActivePanel("none");
-                    router.push("/explore");
+                    router.push("/checkout");
                   }}
                   disabled={cartItems.length === 0}
                   className="flex-[2] h-11 bg-black text-white hover:bg-neutral-800 disabled:opacity-50 disabled:hover:bg-black rounded-xl text-[12px] font-semibold shadow-md active:scale-95 transition-all"
