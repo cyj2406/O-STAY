@@ -185,7 +185,6 @@ export default function Header() {
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       addSearchQuery(searchQuery);
-                      setSearchQuery("");
                       setActivePanel("none");
                       router.push("/explore");
                     }
@@ -203,6 +202,7 @@ export default function Header() {
                 )}
               </div>
 
+              {!searchQuery.trim() && (
               <div className="grid grid-cols-2 gap-8 text-[12px]">
                 {/* Recent Searches */}
                 <div>
@@ -210,8 +210,9 @@ export default function Header() {
                   <div className="flex flex-col gap-2">
                     {recentSearches.map((keyword, idx) => (
                       <div key={idx} className="flex justify-between items-center py-1 border-b border-neutral-50">
-                        <button 
+                        <button
                           onClick={() => {
+                            setSearchQuery(keyword);
                             setActivePanel("none");
                             router.push("/explore");
                           }}
@@ -238,6 +239,9 @@ export default function Header() {
                       <button
                         key={tag}
                         onClick={() => {
+                          const keyword = tag.replace(/^#/, "");
+                          setSearchQuery(keyword);
+                          addSearchQuery(keyword);
                           setActivePanel("none");
                           router.push("/explore");
                         }}
@@ -249,6 +253,7 @@ export default function Header() {
                   </div>
                 </div>
               </div>
+              )}
             </div>
           </div>
         )}

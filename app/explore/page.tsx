@@ -23,7 +23,7 @@ export default function ExplorePage() {
   const [guests, setGuests] = useState(2);
   const [detailTab, setDetailTab] = useState<"intro" | "products" | "structure" | "reviews">("reviews");
 
-  const { cartItems, setCartItems, wishlist, toggleWish } = useApp();
+  const { cartItems, setCartItems, wishlist, toggleWish, searchQuery } = useApp();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -133,6 +133,18 @@ export default function ExplorePage() {
     ...stay,
     floorPlanImage: floorPlanImages[idx % floorPlanImages.length]
   }));
+
+  // 대소문자·공백 무시한 부분 일치 검색을 위한 정규화
+  const normalize = (value: string) => value.toLowerCase().replace(/\s+/g, "");
+  const normalizedQuery = normalize(searchQuery);
+
+  const filteredStays = normalizedQuery
+    ? stays.filter((stay) =>
+        normalize(stay.title).includes(normalizedQuery) ||
+        normalize(stay.location).includes(normalizedQuery) ||
+        stay.tags.some((tag) => normalize(tag).includes(normalizedQuery))
+      )
+    : stays;
 
   const toWishedStay = (stay: StayType) => ({
     id: stay.id,
@@ -481,8 +493,15 @@ export default function ExplorePage() {
         <p className="text-neutral-400 text-[14px] mt-2">오늘의집 스타일 감성과 도면을 바탕으로 나에게 어울리는 스테이를 만나보세요.</p>
       </div>
 
+      {filteredStays.length === 0 ? (
+        <div className="flex flex-col items-center justify-center text-center py-24 text-neutral-400">
+          <span className="text-4xl mb-4">🔍</span>
+          <p className="text-[15px] font-semibold text-neutral-500">검색 결과가 없어요</p>
+          <p className="text-[12.5px] text-neutral-350 mt-1.5">다른 키워드로 다시 검색해 보세요.</p>
+        </div>
+      ) : (
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
-        {stays.map((stay) => (
+        {filteredStays.map((stay) => (
           <article 
             key={stay.id} 
             onClick={() => setSelectedStay(stay)}
@@ -526,6 +545,7 @@ export default function ExplorePage() {
           </article>
         ))}
       </div>
+      )}
     </div>
   );
 }
