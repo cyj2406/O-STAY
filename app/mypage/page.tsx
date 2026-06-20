@@ -5,37 +5,7 @@ import Link from "next/link";
 import { Calendar, Users } from "lucide-react";
 import { useApp } from "../context/AppContext";
 import { useRequireAuth } from "../hooks/useRequireAuth";
-
-// "2026.06.15 - 06.16 (1박)" -> { checkin: Date, checkout: Date }. The
-// end date in this app's date strings omits the year (assumed same as start).
-function parseStayDates(datesStr: string): { checkin: Date; checkout: Date } | null {
-  const match = datesStr.match(/^(\d{4})\.(\d{2})\.(\d{2})\s*-\s*(\d{2})\.(\d{2})/);
-  if (!match) return null;
-  const [, y, m1, d1, m2, d2] = match;
-  const year = Number(y);
-  return {
-    checkin: new Date(year, Number(m1) - 1, Number(d1)),
-    checkout: new Date(year, Number(m2) - 1, Number(d2)),
-  };
-}
-
-function getStayStatus(datesStr: string) {
-  const parsed = parseStayDates(datesStr);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  if (parsed && parsed.checkout < today) {
-    return { label: "이용 완료", badgeClass: "bg-neutral-100 text-neutral-500" };
-  }
-  return { label: "이용 예정", badgeClass: "bg-[#377DFF]/10 text-[#377DFF]" };
-}
-
-function formatPaidAt(iso: string) {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "-";
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
+import { buildReservationId, cancelReservation, formatPaidAt, getStayStatus } from "./utils";
 
 export default function MyPage() {
   const { orders, setOrders, showToast } = useApp();
@@ -53,15 +23,7 @@ export default function MyPage() {
 
   const handleCancelReservation = (orderNumber: string, itemId: number) => {
     if (typeof window !== "undefined" && !window.confirm("이 예약을 취소하시겠습니까?")) return;
-    setOrders((prev) =>
-      prev
-        .map((order) =>
-          order.orderNumber === orderNumber
-            ? { ...order, items: order.items.filter((i) => i.id !== itemId) }
-            : order
-        )
-        .filter((order) => order.items.length > 0)
-    );
+    cancelReservation(setOrders, orderNumber, itemId);
     showToast("예약이 취소되었습니다.", "success");
   };
 
@@ -155,7 +117,7 @@ export default function MyPage() {
                     {/* Actions */}
                     <div className="flex sm:flex-col gap-2.5 w-full sm:w-auto sm:flex-shrink-0">
                       <Link
-                        href="/explore"
+                        href={`/mypage/${buildReservationId(orderNumber, item.id)}`}
                         className="flex-1 sm:flex-none h-10 px-5 bg-black text-white hover:bg-neutral-800 rounded-xl text-[12px] font-semibold flex items-center justify-center transition-all active:scale-95 whitespace-nowrap"
                       >
                         예약 상세 보기
