@@ -87,7 +87,7 @@ export default function SignupPage() {
           <Link href="/">
             <img src="/logo-black.svg" className="h-6 w-auto object-contain mb-3.5 hover:opacity-85 transition-opacity" alt="오늘의 스테이" />
           </Link>
-          <p className="text-[#888888] text-[12.5px] font-medium tracking-tight">
+          <p className="text-[#888888] text-[12.5px] font-normal tracking-tight">
             나만의 취향이 머무는 특별한 공간을 찾아서
           </p>
         </div>
@@ -195,7 +195,7 @@ export default function SignupPage() {
         </form>
 
         {/* Existing account redirect */}
-        <div className="flex items-center gap-2 mt-7 text-[12px] font-semibold text-neutral-450">
+        <div className="flex items-center gap-2 mt-7 text-[12px] font-medium text-neutral-450">
           <span>이미 계정이 있으신가요?</span>
           <Link href="/login" className="text-black hover:underline font-semibold">
             로그인

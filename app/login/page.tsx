@@ -70,7 +70,7 @@ function LoginForm() {
           <Link href="/">
             <img src="/logo-black.svg" className="h-6 w-auto object-contain mb-3.5 hover:opacity-85 transition-opacity" alt="오늘의 스테이" />
           </Link>
-          <p className="text-[#888888] text-[12.5px] font-medium tracking-tight">
+          <p className="text-[#888888] text-[12.5px] font-normal tracking-tight">
             나만의 취향이 머무는 특별한 공간을 찾아서
           </p>
         </div>
@@ -106,7 +106,7 @@ function LoginForm() {
         </form>
 
         {/* Links Area */}
-        <div className="flex items-center gap-3.5 my-6 text-[12px] font-semibold text-neutral-400">
+        <div className="flex items-center gap-3.5 my-6 text-[12px] font-medium text-neutral-400">
           <Link href="/signup" className="hover:text-black transition-colors">
             회원가입
           </Link>
@@ -119,7 +119,7 @@ function LoginForm() {
         {/* Divider */}
         <div className="w-full flex items-center gap-3 mb-6">
           <div className="flex-1 h-px bg-neutral-100" />
-          <span className="text-[10px] font-semibold text-neutral-400 uppercase tracking-widest">
+          <span className="text-[10px] font-medium text-neutral-400 uppercase tracking-widest">
             간편 로그인
           </span>
           <div className="flex-1 h-px bg-neutral-100" />
@@ -130,7 +130,7 @@ function LoginForm() {
           <button
             type="button"
             onClick={handleGoogleLogin}
-            className="w-full max-w-[280px] h-11 bg-white hover:bg-neutral-50 text-neutral-700 border border-neutral-200 rounded-xl text-[12.5px] font-semibold flex items-center justify-center gap-2.5 transition-colors active:scale-98 duration-150"
+            className="w-full h-11 bg-white hover:bg-neutral-50 text-neutral-700 border border-neutral-200 rounded-xl text-[12.5px] font-semibold flex items-center justify-center gap-2.5 transition-colors active:scale-98 duration-150"
           >
             <FcGoogle className="w-4.5 h-4.5" />
             Google로 시작하기

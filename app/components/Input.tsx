@@ -23,7 +23,7 @@ export default function Input({
   return (
     <div className="flex flex-col gap-1.5 w-full relative">
       {label && (
-        <label className="text-[10px] font-semibold text-neutral-400 uppercase tracking-widest pl-1">
+        <label className="text-[10px] font-medium text-neutral-400 uppercase tracking-widest pl-4">
           {label}
         </label>
       )}
@@ -42,7 +42,7 @@ export default function Input({
             className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 text-neutral-400 hover:text-neutral-600 transition-colors"
             aria-label={showPassword ? "비밀번호 숨기기" : "비밀번호 보기"}
           >
-            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            {showPassword ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
           </button>
         )}
       </div>
